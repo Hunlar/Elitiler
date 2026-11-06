@@ -1,13 +1,26 @@
+
 FROM debian:latest
 
-RUN apt update && apt upgrade -y
-RUN apt install git python3-pip ffmpeg -y
+RUN apt-get update && apt-get install -y \
+    git \
+    python3 \
+    python3-pip \
+    python3-venv \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /safone/
+RUN mkdir -p /safone/
 WORKDIR /safone/
+
 COPY . /safone/
 
-RUN pip3 install --upgrade pip
-RUN pip3 install -U -r requirements.txt
+RUN python3 -m venv /opt/venv
 
-CMD python3 main.py
+ENV PATH="/opt/venv/bin:$PATH"
+
+RUN pip install --upgrade pip setuptools wheel
+
+RUN pip install -r requirements.txt
+
+CMD ["python", "main.py"]
+
